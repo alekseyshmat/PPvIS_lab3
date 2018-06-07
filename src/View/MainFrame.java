@@ -1,6 +1,7 @@
 package View;
 
 import Controller.Controller;
+import Model.ShellSort;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -14,6 +15,7 @@ public class MainFrame {
     private MainTable mainTable;
     private Controller controller;
     private Graphic graphic;
+    private ShellSort shellSort;
 
     private int count = 5;
     private JTable table;
@@ -34,6 +36,8 @@ public class MainFrame {
             "n",
             "t"
     };
+
+    public int[] arr = {32, 95, 16, 22, 82, 24, 66, 35, 19, 75, 54, 40, 43, 93, 68};
     private DefaultTableModel tableModel;
 
     public MainFrame() {
@@ -50,6 +54,7 @@ public class MainFrame {
         frame.add(managePanel(), BorderLayout.SOUTH);
         frame.add(startTable(), BorderLayout.WEST);
 
+
     }
 
     private JPanel startTable() {
@@ -59,14 +64,13 @@ public class MainFrame {
 
         table = new JTable(tableModel);
         tableScrollPane = new JScrollPane(table);
-        tableScrollPane.setPreferredSize(new Dimension(100,300));
+        tableScrollPane.setPreferredSize(new Dimension(100, 300));
         table.setEnabled(false);
 
         tablePanel.add(tableScrollPane);
 
         return tablePanel;
     }
-
 
     private JPanel managePanel() {
         JPanel controlPanel = new JPanel();
@@ -84,10 +88,11 @@ public class MainFrame {
         buildButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-//                startTable(Integer.parseInt(textQuantity.getText()));
-//                pagePanel.repaint();
+//                shellSort = new ShellSort(Integer.parseInt(textQuantity.getText()));
+                shellSort = new ShellSort(10);
             }
         });
+
         return controlPanel;
     }
 }
