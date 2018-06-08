@@ -12,16 +12,16 @@ import java.awt.event.ActionListener;
 
 public class MainFrame {
     private JFrame frame;
-    private MainTable mainTable;
+    private JPanel pagePanel;
     private Controller controller;
     private Graphic graphic;
     private ShellSort shellSort;
 
-    private int count = 5;
+    private int row = 0;
+    private int count_row;
+
     private JTable table;
     private JScrollPane tableScrollPane;
-
-    private JPanel pagePanel;
 
     private JButton buildButton;
     private JButton clearButton;
@@ -33,16 +33,18 @@ public class MainFrame {
     private JTextField textQuantity; // количество массивов
 
     private String[] titles = {
-            "n",
-            "t"
+            "Количество элементов",
+            "Время"
     };
 
-    public int[] arr = {32, 95, 16, 22, 82, 24, 66, 35, 19, 75, 54, 40, 43, 93, 68};
     private DefaultTableModel tableModel;
 
     public MainFrame() {
         frame = new JFrame();
+        controller = new Controller(this);
+
         graphic = new Graphic();
+
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(new Dimension(800, 400));
         frame.setLocation(200, 50);
@@ -52,14 +54,14 @@ public class MainFrame {
 
         frame.setLayout(new BorderLayout());
         frame.add(managePanel(), BorderLayout.SOUTH);
-        frame.add(startTable(), BorderLayout.WEST);
+        frame.add(startTable(count_row), BorderLayout.WEST);
 
 
     }
 
-    private JPanel startTable() {
+    private JPanel startTable(int row) {
         JPanel tablePanel = new JPanel();
-        tableModel = new DefaultTableModel(20, titles.length);
+        tableModel = new DefaultTableModel(row, titles.length);
         tableModel.setColumnIdentifiers(titles);
 
         table = new JTable(tableModel);
@@ -69,6 +71,8 @@ public class MainFrame {
 
         tablePanel.add(tableScrollPane);
 
+        tablePanel.repaint();
+
         return tablePanel;
     }
 
@@ -76,20 +80,40 @@ public class MainFrame {
         JPanel controlPanel = new JPanel();
         controlPanel.setLayout(new FlowLayout());
 
-        labelQuantity = new JLabel("Количество маccивов:");
+        labelQuantity = new JLabel("Количество тестов:");
         textQuantity = new JTextField();
+        labelLength = new JLabel("Количество элементов:");
+        textLength = new JTextField();
+
+        textLength.setPreferredSize(new Dimension(30, 30));
         textQuantity.setPreferredSize(new Dimension(30, 30));
         buildButton = new JButton("Построить");
 
         controlPanel.add(labelQuantity);
         controlPanel.add(textQuantity);
+        controlPanel.add(labelLength);
+        controlPanel.add(textLength);
         controlPanel.add(buildButton);
 
         buildButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-//                shellSort = new ShellSort(Integer.parseInt(textQuantity.getText()));
-                shellSort = new ShellSort(10);
+                try {
+                    int quantity = Integer.parseInt(textQuantity.getText());
+                    int length = Integer.parseInt(textLength.getText());
+                    count_row = quantity * (length - 1);
+                    if (quantity > 0 && length > 0) {
+                        controller.startThread(quantity, length);
+                        if (row < count_row) {
+//                            table.setValueAt(null, row, 0);
+//                            table.setValueAt(null, row, 1);
+                            row++;
+                        }
+                    } else
+                        System.out.println("Неверно!");
+                } catch (NumberFormatException ex) {
+                    System.out.println("Неправильный ввод");
+                }
             }
         });
 

@@ -7,16 +7,19 @@ import java.util.Random;
 public class Randoming {
     private List<Integer> list;
 
-    public Randoming(int size) {
+    public Randoming(){}
+
+    public List randomize(int size) {
         Random random = new Random();
         list = new ArrayList<>(size);
         for (int i = 0; i < size; i++) {
             list.add(random.nextInt(100));
         }
         viewList();
+        return list;
     }
 
-    public List<Integer> getList() {
+    public List getList() {
         return list;
     }
 
@@ -28,7 +31,8 @@ public class Randoming {
         this.list = list;
     }
 
-    public void viewList() {
+    private void viewList() {
+        System.out.println();
         for (int elementsOfList : list) {
             System.out.print(elementsOfList + " ");
         }
