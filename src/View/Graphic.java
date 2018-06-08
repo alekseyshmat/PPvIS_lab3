@@ -30,7 +30,7 @@ public class Graphic extends ScrollPane {
     }
 
     private void drawAxis(){
-       graphics2D.setStroke();
-       graphics2D.stro
+//       graphics2D.setStroke();
+//       graphics2D.stro
     }
 }

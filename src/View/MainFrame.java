@@ -1,6 +1,7 @@
 package View;
 
 import Controller.Controller;
+import Model.Point;
 import Model.ShellSort;
 
 import javax.swing.*;
@@ -19,6 +20,7 @@ public class MainFrame {
 
     private int row = 0;
     private int count_row;
+
 
     private JTable table;
     private JScrollPane tableScrollPane;
@@ -42,9 +44,6 @@ public class MainFrame {
     public MainFrame() {
         frame = new JFrame();
         controller = new Controller(this);
-
-        graphic = new Graphic();
-
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(new Dimension(800, 400));
         frame.setLocation(200, 50);
@@ -98,25 +97,28 @@ public class MainFrame {
         buildButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                int quantity = 0;
+                int length = 0;
                 try {
-                    int quantity = Integer.parseInt(textQuantity.getText());
-                    int length = Integer.parseInt(textLength.getText());
+                    quantity = Integer.parseInt(textQuantity.getText());
+                    length = Integer.parseInt(textLength.getText());
                     count_row = quantity * (length - 1);
-                    if (quantity > 0 && length > 0) {
-                        controller.startThread(quantity, length);
-                        if (row < count_row) {
-//                            table.setValueAt(null, row, 0);
-//                            table.setValueAt(null, row, 1);
-                            row++;
-                        }
-                    } else
-                        System.out.println("Неверно!");
                 } catch (NumberFormatException ex) {
                     System.out.println("Неправильный ввод");
+                }
+                if (quantity > 0 && length > 0)
+                    controller.startThread(quantity, length);
+                else {
+                    System.out.println("Неправильно");
+                    return;
                 }
             }
         });
 
         return controlPanel;
+    }
+
+    public void newPoint(Point point) {
+
     }
 }
