@@ -16,7 +16,6 @@ public class MainFrame {
     private JPanel pagePanel;
     private Controller controller;
     private Graphic graphic;
-    private ShellSort shellSort;
 
     private int row = 0;
     private int count_row;
@@ -26,7 +25,6 @@ public class MainFrame {
     private JScrollPane tableScrollPane;
 
     private JButton buildButton;
-    private JButton clearButton;
 
     private JLabel labelLength;
     private JLabel labelQuantity;
@@ -45,7 +43,7 @@ public class MainFrame {
         frame = new JFrame();
         controller = new Controller(this);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(new Dimension(800, 400));
+        frame.setSize(new Dimension(900, 600));
         frame.setLocation(200, 50);
         frame.setTitle("Рисование графика");
         frame.setResizable(false);
@@ -55,6 +53,8 @@ public class MainFrame {
         frame.add(managePanel(), BorderLayout.SOUTH);
         frame.add(startTable(count_row), BorderLayout.WEST);
 
+        graphic = new Graphic();
+        frame.add(graphic,BorderLayout.CENTER);
 
     }
 
@@ -114,6 +114,7 @@ public class MainFrame {
                 }
             }
         });
+
 
         return controlPanel;
     }
