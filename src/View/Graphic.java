@@ -6,6 +6,8 @@ import java.awt.geom.Line2D;
 import javax.swing.*;
 import java.awt.*;
 
+import static java.awt.Color.BLACK;
+
 public class Graphic extends JPanel {
 
     private Graphics2D graphics2D;
@@ -16,31 +18,37 @@ public class Graphic extends JPanel {
     private int yShift = 20;
     private int numberOfCoordinates = 10;
 
+    private int coorX = 0;
+    private double coorY = 0;
+
     private String xName = "X";
     private String yName = "Y";
     private String zName = "0";
 
-    private static final int BORDER = 30;
-    private static final int BORDER_LEFT = 40;
-    private static final int BORDER_UP = 2;
-    private static final int BORDER_SEGMENT = 20;
-    private static final int COUNT_OF_SEGMENTS_Y = 10;
-    private static final int COUNT_OF_SEGMENTS_X = 10;
-
-    private int segmentX, segmentY;
-
+    private int zoom;
     private List list;
 
     public Graphic() {
         setPreferredSize(new Dimension(width, height));
+
+        addMouseWheelListener(e -> {
+            if (e.getModifiers() == InputEvent.CTRL_MASK) {
+                if (e.getWheelRotation() < 0 && this.zoom < 100) {
+                    this.zoom++;
+                    zooming(getWidth() + 100, getHeight());
+                    repaint();
+                } else if (e.getWheelRotation() > 0 && this.zoom > 1) {
+                    this.zoom--;
+                    zooming(getWidth() - 100, getHeight());
+                    repaint();
+                }
+            }
+        });
     }
 
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-        segmentX = (getWidth() - BORDER_SEGMENT - BORDER_LEFT) / COUNT_OF_SEGMENTS_Y;
-        segmentY = (getHeight() - BORDER_SEGMENT - BORDER) / COUNT_OF_SEGMENTS_X;
-
         graphics2D = (Graphics2D) g;
 
         graphics2D.setStroke(new BasicStroke(3.0f));
@@ -55,7 +63,7 @@ public class Graphic extends JPanel {
 
         graphics2D.drawString(yName, xShift - 20, yShift + 15);
         graphics2D.drawString(xName, width - xShift - 5, height);
-        graphics2D.drawString(zName, xShift - 10, height - yShift + 10);
+        graphics2D.drawString(zName, xShift, height - yShift + 15);
 
         graphics2D.setStroke(new BasicStroke(0.5f));
         for (int indexX = 1; indexX < numberOfCoordinates; indexX++) {
@@ -75,5 +83,40 @@ public class Graphic extends JPanel {
                     yShift + indexY * (height - 2 * yShift) / numberOfCoordinates
             );
         }
+        addCoordinatesX();
+        addCoordinatesY();
+    }
+
+    private void addCoordinatesX() {
+        graphics2D.setStroke(new BasicStroke(1.0f));
+        for (int indexX = 1; indexX < numberOfCoordinates; indexX++) {
+            graphics2D.drawString(
+                    indexX * coorX / numberOfCoordinates + "",
+                    xShift + indexX * (width - 2 * xShift) / numberOfCoordinates,
+                    height - yShift + 15
+            );
+        }
+    }
+
+    private void addCoordinatesY() {
+        graphics2D.setStroke(new BasicStroke(1.0f));
+        for (int indexY = 0; indexY < numberOfCoordinates; indexY++) {
+            graphics2D.drawString(
+                    (double) Math.round((double) indexY * coorY * 100 / numberOfCoordinates) / 100 + "",
+                    xShift - 25,
+                    height - yShift - indexY * (height - 2 * yShift) / numberOfCoordinates
+            );
+        }
+    }
+
+    private void addPoint() {
+
+    }
+
+    private void zooming(int width, int height) {
+        setPreferredSize(new Dimension(width, height));
+        setSize(new Dimension(width, height));
+        repaint();
+
     }
 }
