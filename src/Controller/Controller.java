@@ -1,17 +1,20 @@
 package Controller;
 
-import Model.Point;
-import Model.ShellSort;
+import Model.PointCoor;
+import Model.PointDB;
 import Model.SortThread;
 import View.MainFrame;
+
+
+import java.util.List;
 
 public class Controller {
     private MainFrame mainFrame;
     private SortThread sortThread;
-    private ShellSort shellSort;
-    private Thread thread;
+    private PointDB pointDB;
 
-    public Controller(MainFrame mainFrame) {
+    public Controller(PointDB pointDB, MainFrame mainFrame) {
+        this.pointDB = pointDB;
         this.mainFrame = mainFrame;
     }
 
@@ -24,12 +27,35 @@ public class Controller {
         return sortThread;
     }
 
+    public List<PointCoor> getListOfPoints() {
+        return pointDB.getRecordOfPoints();
+    }
+
+    public MainFrame getMainFrame() {
+        return mainFrame;
+    }
+
     public void killed() {
         sortThread.killed();
     }
 
-    public void newPoint(Point point) {
-        mainFrame.newPoint(point);
+    public void addPoints(PointCoor pointCoor) {
+        pointDB.add(pointCoor);
     }
 
+    public void DataBase(List<PointCoor> pointCoors) {
+        pointDB.DataBase(pointCoors);
+    }
+
+    public void clearData() {
+        pointDB.deleteRecords();
+    }
+
+    public int getSize() {
+        return pointDB.getSize();
+    }
+
+    public void zooming(int width, int height, int zoom, int zoomX) {
+        mainFrame.zooming(width, height, zoom, zoomX);
+    }
 }

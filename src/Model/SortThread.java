@@ -1,15 +1,19 @@
 package Model;
 
 import Controller.Controller;
+import View.Graphic;
+import View.MainFrame;
 
 import java.util.List;
 
 public class SortThread extends Thread {
     private int size;
     private int elements;
+    private double time;
     private boolean alive;
-    private double time = 0;
     private Controller controller;
+    private Graphic graphic;
+    private List<PointCoor> list;
 
     public SortThread(Controller controller, int size, int elements) {
         this.controller = controller;
@@ -22,8 +26,12 @@ public class SortThread extends Thread {
         alive = false;
     }
 
-    public double getTime() {
-        return time;
+    private PointCoor readPoint(int el, double timeY) {
+        PointCoor pointCoor = new PointCoor();
+        pointCoor.setX(el);
+        pointCoor.setY(timeY);
+
+        return pointCoor;
     }
 
     @Override
@@ -37,13 +45,18 @@ public class SortThread extends Thread {
                 double startTime = System.nanoTime();
                 shellSort.sort();
                 double finishTime = System.nanoTime();
-                time += (finishTime - startTime) / 1000;
+                time += (finishTime - startTime) / (size * 1000);
                 System.out.println(time + " время");
             }
-            if (!alive)
+
+            if (!alive) {
                 return;
+            }
+
+            controller.addPoints(readPoint(minLength, time));
             minLength++;
         }
+        controller.getMainFrame().viewTable(controller.getListOfPoints());
     }
 
 }

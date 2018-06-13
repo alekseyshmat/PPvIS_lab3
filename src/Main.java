@@ -8,13 +8,10 @@ import java.awt.*;
 public class Main {
     private MainFrame frame;
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-               new MainFrame();
 
-            }
-        });
+    public static void main(String[] args) {
+//        new Controller();
+       new MainFrame();
+
     }
 }

@@ -1,5 +1,6 @@
 package Model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ShellSort {
@@ -7,22 +8,23 @@ public class ShellSort {
 
     public ShellSort(int size) {
         list = new Randoming(size);
-        listSort(list.getList());
+//        listSort();
+//        sort();
     }
 
     public void sort() {
-        List<Integer> arr = list.getList();
-        listSort(arr);
+        list.setList(listSort());
 
-        System.out.println("Итоговый 2 ");
-        for (int el : arr) {
+        List<Integer> arr = list.getList();
+        System.out.println("Итоговый 2");
+        for (int el : arr)
             System.out.print(el + " ");
-        }
         System.out.println();
     }
 
-    private void listSort(List<Integer> arr) {
+    private List<Integer> listSort() {
         int k;
+        List<Integer> arr = list.getList();
         for (int i = arr.size() / 2; i > 0; i /= 2) {
             for (int j = i; j < arr.size(); j++) {
                 int tmp = arr.get(j);
@@ -32,6 +34,7 @@ public class ShellSort {
                 arr.set(k, tmp);
             }
         }
+        return arr;
     }
 }
 

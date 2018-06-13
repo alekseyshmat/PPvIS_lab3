@@ -1,14 +1,19 @@
 package View;
 
+import Model.PointCoor;
+import Model.PointDB;
+import Controller.Controller;
+
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.InputEvent;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
-import javax.swing.*;
-import java.awt.*;
-
-import static java.awt.Color.BLACK;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Graphic extends JPanel {
+    private Controller controller;
 
     private Graphics2D graphics2D;
     private int height = 500;
@@ -18,28 +23,53 @@ public class Graphic extends JPanel {
     private int yShift = 20;
     private int numberOfCoordinates = 10;
 
-    private int coorX = 0;
+    private double coorX = 0;
     private double coorY = 0;
 
-    private String xName = "X";
-    private String yName = "Y";
-    private String zName = "0";
+    private int length;
+    private double lastX;
+    private double lastY;
+
+    private double prevX = -1;
+    private double prevY = -1;
 
     private int zoom;
-    private List list;
+    private List<PointCoor> list;
 
-    public Graphic() {
-        setPreferredSize(new Dimension(width, height));
+    private int zoomX;
+    private int segmentX, segmentY;
+
+    public Graphic(Controller controller, int zoom, int zoomX) {
+//        setPreferredSize(new Dimension(width, height));
+        list = new ArrayList<>();
+        this.zoom = zoom;
+        this.zoomX = zoomX;
+        this.controller = controller;
+        zooming(width, height);
+//        segmentX = (getWidth() - 2 * xShift) / numberOfCoordinates;
+//        segmentY = (getHeight() - 2 * yShift) / numberOfCoordinates;
 
         addMouseWheelListener(e -> {
             if (e.getModifiers() == InputEvent.CTRL_MASK) {
                 if (e.getWheelRotation() < 0 && this.zoom < 100) {
                     this.zoom++;
-                    zooming(getWidth() + 100, getHeight());
+                    zooming(getWidth() + 30, getHeight() + 30);
                     repaint();
                 } else if (e.getWheelRotation() > 0 && this.zoom > 1) {
                     this.zoom--;
+                    zooming(getWidth() - 30, getHeight() - 30);
+                    repaint();
+                }
+            } else if (e.getModifiers() == InputEvent.SHIFT_MASK) {
+                if (e.getWheelRotation() < 0 && this.zoomX < 100) {
+                    this.zoomX++;
+                    zooming(getWidth() + 100, getHeight());
+                    segmentX = xShift + (width - 2 * xShift) / numberOfCoordinates;
+                    repaint();
+                } else if (e.getWheelRotation() > 0 && this.zoomX > 1) {
+                    this.zoomX--;
                     zooming(getWidth() - 100, getHeight());
+                    segmentX = (getWidth() - 2 * xShift) / numberOfCoordinates;
                     repaint();
                 }
             }
@@ -61,8 +91,11 @@ public class Graphic extends JPanel {
         graphics2D.drawLine(width - xShift, height - yShift, width - xShift - 15, height - yShift - 10);
         graphics2D.drawLine(width - xShift, height - yShift, width - xShift - 15, height - yShift + 10);
 
+        String yName = "Y";
         graphics2D.drawString(yName, xShift - 20, yShift + 15);
+        String xName = "X";
         graphics2D.drawString(xName, width - xShift - 5, height);
+        String zName = "0";
         graphics2D.drawString(zName, xShift, height - yShift + 15);
 
         graphics2D.setStroke(new BasicStroke(0.5f));
@@ -83,8 +116,42 @@ public class Graphic extends JPanel {
                     yShift + indexY * (height - 2 * yShift) / numberOfCoordinates
             );
         }
+/*
+        if (controller.getSize() != 0) {
+            for (int size = 1; size < controller.getSize(); size++) {
+                int x = list.get(list.indexOf(size - 1)).getX();
+                double y = list.get(list.indexOf(size - 1)).getY();
+                try {
+                    drawPoint(x, y, graphics2D);
+                } catch (Exception e) {
+                    System.out.println("Sorry!");
+                }
+            }
+        }
+  */
         addCoordinatesX();
         addCoordinatesY();
+    }
+
+    private void drawPoint(int x, double y, Graphics2D graphics2D) {
+
+        graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+        x = xShift + (x - 1);
+        y = getHeight() - xShift;
+
+        graphics2D.setColor(Color.BLUE);
+        graphics2D.setStroke(new BasicStroke(2.0f));
+
+        graphics2D.draw(new Line2D.Double(lastX, lastY, x, y));
+        graphics2D.fill(new Ellipse2D.Double(x - 2, y - 2, 5, 5));
+
+        lastX = x;
+        lastY = y;
+    }
+
+    public JPanel getPanel() {
+        return this;
     }
 
     private void addCoordinatesX() {
@@ -107,16 +174,35 @@ public class Graphic extends JPanel {
                     height - yShift - indexY * (height - 2 * yShift) / numberOfCoordinates
             );
         }
+
     }
 
-    private void addPoint() {
-
+    public void setLengthArr(int length) {
+        this.length = length;
+        if (length % numberOfCoordinates == 0) {
+            coorX = length;
+        } else {
+            coorX = numberOfCoordinates * (length / numberOfCoordinates + 1);
+        }
+        addCoordinatesX();
+        repaint();
     }
 
     private void zooming(int width, int height) {
         setPreferredSize(new Dimension(width, height));
         setSize(new Dimension(width, height));
         repaint();
+        controller.zooming(width, height, zoom, zoomX);
+        repaint();
+    }
 
+    public void setIncrement(int sign) {
+        zoom += sign * 5;
+        zooming(getWidth() + sign * 100, getHeight() + sign * 100);
+        repaint();
+    }
+
+    public void rPaint(){
+        repaint();
     }
 }
