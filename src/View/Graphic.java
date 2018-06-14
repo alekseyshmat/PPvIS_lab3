@@ -32,13 +32,11 @@ public class Graphic extends JPanel {
     private int zoom;
     private List<PointCoor> list;
 
-    private int zoomX;
     private int segmentX, segmentY;
 
-    public Graphic(Controller controller, int zoom, int zoomX) {
+    public Graphic(Controller controller, int zoom) {
         list = new ArrayList<>();
         this.zoom = zoom;
-        this.zoomX = zoomX;
         this.controller = controller;
         zooming(width, height);
 
@@ -53,14 +51,14 @@ public class Graphic extends JPanel {
                     segmentX = (getWidth() - 2 * xShift) / numberOfCoordinates;
                     segmentY = (getHeight() - 2 * yShift) / numberOfCoordinates;
                     repaint();
-                } else if (e.getWheelRotation() > 0 && this.zoom > 1) {
+                } else if (e.getWheelRotation() > 0 && this.zoom > 0) {
                     this.zoom--;
                     zooming(getWidth() - 30, getHeight() - 30);
                     segmentX = (getWidth() - 2 * xShift) / numberOfCoordinates;
                     segmentY = (getHeight() - 2 * yShift) / numberOfCoordinates;
                     repaint();
                 }
-            } 
+            }
         });
     }
 
@@ -93,6 +91,7 @@ public class Graphic extends JPanel {
                     xShift + indexX * segmentX,
                     getHeight() - yShift
             );
+            repaint();
         }
 
         for (int indexY = 1; indexY < numberOfCoordinates; indexY++) {
@@ -102,6 +101,7 @@ public class Graphic extends JPanel {
                     getWidth() - xShift,
                     yShift + indexY * segmentY
             );
+            repaint();
         }
 
         if (controller.getSize() != 0) {
@@ -115,9 +115,7 @@ public class Graphic extends JPanel {
                 if (y > coorY) {
                     coorY = y;
                     addCoordinatesY();
-                    repaint();
                 } else {
-                    System.out.println(y + " big");
                     double y1 = controller.getListOfPoints().get(size - 1).getY();
                     double y2 = controller.getListOfPoints().get(size).getY();
                     drawPoint(x1, x2, y1, y2, graphics2D);
@@ -198,7 +196,7 @@ public class Graphic extends JPanel {
         setPreferredSize(new Dimension(width, height));
         setSize(new Dimension(width, height));
         repaint();
-        controller.zooming(width, height, zoom, zoomX);
+        controller.zooming(width, height, zoom);
         repaint();
     }
 

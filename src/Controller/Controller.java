@@ -51,7 +51,7 @@ public class Controller {
         return pointDB.getSize();
     }
 
-    public void zooming(int width, int height, int zoom, int zoomX) {
-        mainFrame.zooming(width, height, zoom, zoomX);
+    public void zooming(int width, int height, int zoom) {
+        mainFrame.zooming(width, height, zoom);
     }
 }

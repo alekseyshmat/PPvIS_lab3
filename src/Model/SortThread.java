@@ -5,7 +5,6 @@ import Controller.Controller;
 public class SortThread extends Thread {
     private int size;
     private int elements;
-    private double time;
     private boolean alive;
     private Controller controller;
 
@@ -33,7 +32,7 @@ public class SortThread extends Thread {
         int minLength = 2;
         alive = true;
         while (minLength <= elements && alive) {
-            time = 0;
+            double time = 0;
             for (int i = 0; i < size; i++) {
                 ShellSort shellSort = new ShellSort(minLength);
                 double startTime = System.nanoTime();
@@ -42,11 +41,9 @@ public class SortThread extends Thread {
                 time += (finishTime - startTime) / (size * 1000);
                 System.out.println(time + " время");
             }
-
             if (!alive) {
                 return;
             }
-
             controller.addPoints(readPoint(minLength, time));
             minLength++;
         }

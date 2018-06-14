@@ -13,17 +13,10 @@ import java.awt.event.ActionListener;
 import java.util.List;
 
 public class MainFrame {
-    private JFrame frame;
-    private JPanel pagePanel;
     private JPanel tablePanel;
-    private JPanel graphicPanel;
     private Controller controller;
     private Graphic graphic;
     private int count_row;
-
-    private List<PointCoor> points;
-
-    private JScrollPane scrollGraphic;
 
     private JTable table;
     private JScrollPane tableScrollPane;
@@ -38,21 +31,20 @@ public class MainFrame {
     };
 
     private int width, height;
-    private int zoom, zoomX;
+    private int zoom;
 
     private DefaultTableModel tableModel;
 
     public MainFrame() {
-
         PointDB pointDB = new PointDB();
         controller = new Controller(pointDB, this);
         run();
     }
 
     private void run() {
-        frame = new JFrame();
-        pagePanel = new JPanel();
-        graphicPanel = new JPanel();
+        JFrame frame = new JFrame();
+        JPanel pagePanel = new JPanel();
+        JPanel graphicPanel = new JPanel();
 
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(new Dimension(950, 600));
@@ -64,9 +56,9 @@ public class MainFrame {
         pagePanel.add(managePanel(), BorderLayout.SOUTH);
         pagePanel.add(startTable(), BorderLayout.WEST);
 
-        graphic = new Graphic(controller, 0, 0);
+        graphic = new Graphic(controller, 0);
         graphicPanel = graphic.getPanel();
-        scrollGraphic = new JScrollPane(graphicPanel, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+        JScrollPane scrollGraphic = new JScrollPane(graphicPanel, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
 
         MouseController mouseController = new MouseController(scrollGraphic);
         graphicPanel.addMouseListener(mouseController);
@@ -118,13 +110,12 @@ public class MainFrame {
         JButton buildButton = new JButton("Построить");
         labelSize = new JLabel("Масштаб: 0%");
 
-        controlPanel.add(labelSize);
-
         controlPanel.add(labelQuantity);
         controlPanel.add(textQuantity);
         controlPanel.add(labelLength);
         controlPanel.add(textLength);
         controlPanel.add(buildButton);
+        controlPanel.add(labelSize);
 
         buildButton.addActionListener(new ActionListener() {
             @Override
@@ -138,15 +129,14 @@ public class MainFrame {
                     quantity = Integer.parseInt(textQuantity.getText());
                     length = Integer.parseInt(textLength.getText());
                     count_row = (length - 1);
-                    tableModel.setRowCount(count_row);
-
                 } catch (NumberFormatException ex) {
                     System.out.println("Неправильный ввод");
                 }
                 if (quantity < 1 || length < 3) {
-                    System.out.println("ploho");
+                    System.out.println("Введите большие значения");
                     return;
                 }
+                tableModel.setRowCount(count_row);
                 graphic.setLengthArr(length);
                 controller.startThread(quantity, length);
             }
@@ -158,7 +148,7 @@ public class MainFrame {
     public void viewTable(List<PointCoor> pointDBList) {
         int row = 0;
         tablePanel.add(tableScrollPane);
-        points = pointDBList;
+        List<PointCoor> points = pointDBList;
         if (points.size() == 0)
             return;
         for (int index = 0; index < count_row; index++) {
@@ -175,10 +165,9 @@ public class MainFrame {
         tablePanel.repaint();
     }
 
-    public void zooming(int width, int height, int zoom, int zoomX) {
+    public void zooming(int width, int height, int zoom) {
         this.width = width;
         this.height = height;
-        this.zoomX = zoomX;
         this.zoom = zoom;
         labelSize.setText("Масштаб: " + this.zoom + " %");
     }
