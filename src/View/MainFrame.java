@@ -44,7 +44,7 @@ public class MainFrame {
     private void run() {
         JFrame frame = new JFrame();
         JPanel pagePanel = new JPanel();
-        JPanel graphicPanel = new JPanel();
+        JPanel graphicPanel;
 
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(new Dimension(950, 600));
@@ -132,7 +132,7 @@ public class MainFrame {
                 } catch (NumberFormatException ex) {
                     System.out.println("Неправильный ввод");
                 }
-                if (quantity < 1 || length < 3) {
+                if (quantity < 2 || length < 3) {
                     System.out.println("Введите большие значения");
                     return;
                 }
@@ -156,9 +156,6 @@ public class MainFrame {
                 PointCoor record = points.get(index);
                 table.getModel().setValueAt(record.getX(), row, 0);
                 table.getModel().setValueAt(record.getY(), row, 1);
-            } else {
-                table.getModel().setValueAt("", row, 0);
-                table.getModel().setValueAt("", row, 1);
             }
             row++;
         }

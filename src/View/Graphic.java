@@ -5,8 +5,6 @@ import Controller.Controller;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
@@ -32,7 +30,7 @@ public class Graphic extends JPanel {
     private int zoom;
     private List<PointCoor> list;
 
-    private int segmentX, segmentY;
+    private int partX, partY;
 
     public Graphic(Controller controller, int zoom) {
         list = new ArrayList<>();
@@ -40,22 +38,22 @@ public class Graphic extends JPanel {
         this.controller = controller;
         zooming(width, height);
 
-        segmentX = (getWidth() - 2 * xShift) / numberOfCoordinates;
-        segmentY = (getHeight() - 2 * yShift) / numberOfCoordinates;
+        partX = (getWidth() - 2 * xShift) / numberOfCoordinates;
+        partY = (getHeight() - 2 * yShift) / numberOfCoordinates;
 
         addMouseWheelListener(e -> {
             if (e.getModifiers() == InputEvent.CTRL_MASK) {
                 if (e.getWheelRotation() < 0 && this.zoom < 100) {
                     this.zoom++;
                     zooming(getWidth() + 30, getHeight() + 30);
-                    segmentX = (getWidth() - 2 * xShift) / numberOfCoordinates;
-                    segmentY = (getHeight() - 2 * yShift) / numberOfCoordinates;
+                    partX = (getWidth() - 2 * xShift) / numberOfCoordinates;
+                    partY = (getHeight() - 2 * yShift) / numberOfCoordinates;
                     repaint();
                 } else if (e.getWheelRotation() > 0 && this.zoom > 0) {
                     this.zoom--;
                     zooming(getWidth() - 30, getHeight() - 30);
-                    segmentX = (getWidth() - 2 * xShift) / numberOfCoordinates;
-                    segmentY = (getHeight() - 2 * yShift) / numberOfCoordinates;
+                    partX = (getWidth() - 2 * xShift) / numberOfCoordinates;
+                    partY = (getHeight() - 2 * yShift) / numberOfCoordinates;
                     repaint();
                 }
             }
@@ -86,9 +84,9 @@ public class Graphic extends JPanel {
         graphics2D.setStroke(new BasicStroke(0.5f));
         for (int indexX = 1; indexX < numberOfCoordinates; indexX++) {
             graphics2D.drawLine(
-                    xShift + indexX * segmentX,
+                    xShift + indexX * partX,
                     yShift,
-                    xShift + indexX * segmentX,
+                    xShift + indexX * partX,
                     getHeight() - yShift
             );
             repaint();
@@ -97,9 +95,9 @@ public class Graphic extends JPanel {
         for (int indexY = 1; indexY < numberOfCoordinates; indexY++) {
             graphics2D.drawLine(
                     xShift,
-                    yShift + indexY * segmentY,
+                    yShift + indexY * partY,
                     getWidth() - xShift,
-                    yShift + indexY * segmentY
+                    yShift + indexY * partY
             );
             repaint();
         }
@@ -122,7 +120,6 @@ public class Graphic extends JPanel {
                 }
             }
         }
-
         addCoordinatesX();
         addCoordinatesY();
     }
@@ -132,22 +129,22 @@ public class Graphic extends JPanel {
         graphics2D.setStroke(new BasicStroke(2.0f));
         graphics2D.setColor(Color.GREEN);
         graphics2D.draw(new Line2D.Double(
-                xShift + x1 * (segmentX * numberOfCoordinates) / coorX,
-                getHeight() - yShift - y1 * (segmentY * numberOfCoordinates) / coorY,
-                xShift + x2 * (segmentX * numberOfCoordinates) / coorX,
-                getHeight() - yShift - y2 * (segmentY * numberOfCoordinates) / coorY
+                xShift + x1 * (partX * numberOfCoordinates) / coorX,
+                getHeight() - yShift - y1 * (partY * numberOfCoordinates) / coorY,
+                xShift + x2 * (partX * numberOfCoordinates) / coorX,
+                getHeight() - yShift - y2 * (partY * numberOfCoordinates) / coorY
 
         ));
         graphics2D.setColor(Color.RED);
         graphics2D.draw(new Ellipse2D.Double(
-                xShift + x1 * (segmentX * numberOfCoordinates) / coorX - 3,
-                getHeight() - yShift - y1 * (segmentY * numberOfCoordinates) / coorY - 3,
+                xShift + x1 * (partX * numberOfCoordinates) / coorX - 3,
+                getHeight() - yShift - y1 * (partY * numberOfCoordinates) / coorY - 3,
                 7,
                 7
         ));
         graphics2D.draw(new Ellipse2D.Double(
-                xShift + x2 * (segmentX * numberOfCoordinates) / coorX - 3,
-                getHeight() - yShift - y2 * (segmentY * numberOfCoordinates) / coorY - 3,
+                xShift + x2 * (partX * numberOfCoordinates) / coorX - 3,
+                getHeight() - yShift - y2 * (partY * numberOfCoordinates) / coorY - 3,
                 7,
                 7
         ));
@@ -163,7 +160,7 @@ public class Graphic extends JPanel {
         for (int indexX = 1; indexX < numberOfCoordinates; indexX++) {
             graphics2D.drawString(
                     indexX * coorX / numberOfCoordinates + "",
-                    xShift + indexX * segmentX,
+                    xShift + indexX * partX,
                     getHeight() - yShift + 15
             );
         }
@@ -176,7 +173,7 @@ public class Graphic extends JPanel {
             graphics2D.drawString(
                     (double) Math.round(indexY * coorY * 100 / numberOfCoordinates) / 100 + "",
                     xShift - 40,
-                    getHeight() - yShift - indexY * segmentY
+                    getHeight() - yShift - indexY * partY
             );
         }
     }
@@ -197,7 +194,6 @@ public class Graphic extends JPanel {
         setSize(new Dimension(width, height));
         repaint();
         controller.zooming(width, height, zoom);
-        repaint();
     }
 
     private void update() {
