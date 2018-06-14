@@ -1,10 +1,6 @@
 package Model;
 
 import Controller.Controller;
-import View.Graphic;
-import View.MainFrame;
-
-import java.util.List;
 
 public class SortThread extends Thread {
     private int size;
@@ -12,8 +8,6 @@ public class SortThread extends Thread {
     private double time;
     private boolean alive;
     private Controller controller;
-    private Graphic graphic;
-    private List<PointCoor> list;
 
     public SortThread(Controller controller, int size, int elements) {
         this.controller = controller;
@@ -38,7 +32,7 @@ public class SortThread extends Thread {
     public void run() {
         int minLength = 2;
         alive = true;
-        while (minLength < elements + 1 && alive) {
+        while (minLength <= elements && alive) {
             time = 0;
             for (int i = 0; i < size; i++) {
                 ShellSort shellSort = new ShellSort(minLength);
@@ -58,5 +52,4 @@ public class SortThread extends Thread {
         }
         controller.getMainFrame().viewTable(controller.getListOfPoints());
     }
-
 }

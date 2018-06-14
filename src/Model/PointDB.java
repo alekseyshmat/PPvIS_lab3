@@ -22,16 +22,6 @@ public class PointDB {
         pointsList.clear();
     }
 
-    public PointCoor getPoints(int index) {
-        return pointsList.get(index);
-    }
-
-    public void DataBase(List<PointCoor> listData) {
-        for (PointCoor pointCoor : listData) {
-            add(pointCoor);
-        }
-    }
-
     public int getSize() {
         return pointsList.size();
     }

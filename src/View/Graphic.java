@@ -1,11 +1,12 @@
 package View;
 
 import Model.PointCoor;
-import Model.PointDB;
 import Controller.Controller;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
@@ -23,15 +24,10 @@ public class Graphic extends JPanel {
     private int yShift = 20;
     private int numberOfCoordinates = 10;
 
-    private double coorX = 0;
+    private int coorX = 0;
     private double coorY = 0;
 
     private int length;
-    private double lastX;
-    private double lastY;
-
-    private double prevX = -1;
-    private double prevY = -1;
 
     private int zoom;
     private List<PointCoor> list;
@@ -40,39 +36,31 @@ public class Graphic extends JPanel {
     private int segmentX, segmentY;
 
     public Graphic(Controller controller, int zoom, int zoomX) {
-//        setPreferredSize(new Dimension(width, height));
         list = new ArrayList<>();
         this.zoom = zoom;
         this.zoomX = zoomX;
         this.controller = controller;
         zooming(width, height);
-//        segmentX = (getWidth() - 2 * xShift) / numberOfCoordinates;
-//        segmentY = (getHeight() - 2 * yShift) / numberOfCoordinates;
+
+        segmentX = (getWidth() - 2 * xShift) / numberOfCoordinates;
+        segmentY = (getHeight() - 2 * yShift) / numberOfCoordinates;
 
         addMouseWheelListener(e -> {
             if (e.getModifiers() == InputEvent.CTRL_MASK) {
                 if (e.getWheelRotation() < 0 && this.zoom < 100) {
                     this.zoom++;
                     zooming(getWidth() + 30, getHeight() + 30);
+                    segmentX = (getWidth() - 2 * xShift) / numberOfCoordinates;
+                    segmentY = (getHeight() - 2 * yShift) / numberOfCoordinates;
                     repaint();
                 } else if (e.getWheelRotation() > 0 && this.zoom > 1) {
                     this.zoom--;
                     zooming(getWidth() - 30, getHeight() - 30);
-                    repaint();
-                }
-            } else if (e.getModifiers() == InputEvent.SHIFT_MASK) {
-                if (e.getWheelRotation() < 0 && this.zoomX < 100) {
-                    this.zoomX++;
-                    zooming(getWidth() + 100, getHeight());
-                    segmentX = xShift + (width - 2 * xShift) / numberOfCoordinates;
-                    repaint();
-                } else if (e.getWheelRotation() > 0 && this.zoomX > 1) {
-                    this.zoomX--;
-                    zooming(getWidth() - 100, getHeight());
                     segmentX = (getWidth() - 2 * xShift) / numberOfCoordinates;
+                    segmentY = (getHeight() - 2 * yShift) / numberOfCoordinates;
                     repaint();
                 }
-            }
+            } 
         });
     }
 
@@ -80,74 +68,91 @@ public class Graphic extends JPanel {
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         graphics2D = (Graphics2D) g;
-
         graphics2D.setStroke(new BasicStroke(3.0f));
 
-        graphics2D.drawLine(xShift, yShift, xShift, height - yShift);
+        graphics2D.drawLine(xShift, yShift, xShift, getHeight() - yShift);
         graphics2D.drawLine(xShift, yShift, xShift + 10, yShift + 15);
         graphics2D.drawLine(xShift, yShift, xShift - 10, yShift + 15);
 
-        graphics2D.drawLine(xShift, height - yShift, width - xShift, height - yShift);
-        graphics2D.drawLine(width - xShift, height - yShift, width - xShift - 15, height - yShift - 10);
-        graphics2D.drawLine(width - xShift, height - yShift, width - xShift - 15, height - yShift + 10);
+        graphics2D.drawLine(xShift, getHeight() - yShift, getWidth() - xShift, getHeight() - yShift);
+        graphics2D.drawLine(getWidth() - xShift, getHeight() - yShift, getWidth() - xShift - 15, getHeight() - yShift - 10);
+        graphics2D.drawLine(getWidth() - xShift, getHeight() - yShift, getWidth() - xShift - 15, getHeight() - yShift + 10);
 
         String yName = "Y";
         graphics2D.drawString(yName, xShift - 20, yShift + 15);
         String xName = "X";
-        graphics2D.drawString(xName, width - xShift - 5, height);
+        graphics2D.drawString(xName, getWidth() - xShift - 5, getHeight());
         String zName = "0";
-        graphics2D.drawString(zName, xShift, height - yShift + 15);
+        graphics2D.drawString(zName, xShift, getHeight() - yShift + 15);
 
         graphics2D.setStroke(new BasicStroke(0.5f));
         for (int indexX = 1; indexX < numberOfCoordinates; indexX++) {
             graphics2D.drawLine(
-                    xShift + indexX * (width - 2 * xShift) / numberOfCoordinates,
+                    xShift + indexX * segmentX,
                     yShift,
-                    xShift + indexX * (width - 2 * xShift) / numberOfCoordinates,
-                    height - yShift
+                    xShift + indexX * segmentX,
+                    getHeight() - yShift
             );
         }
 
         for (int indexY = 1; indexY < numberOfCoordinates; indexY++) {
             graphics2D.drawLine(
                     xShift,
-                    yShift + indexY * (height - 2 * yShift) / numberOfCoordinates,
-                    width - xShift,
-                    yShift + indexY * (height - 2 * yShift) / numberOfCoordinates
+                    yShift + indexY * segmentY,
+                    getWidth() - xShift,
+                    yShift + indexY * segmentY
             );
         }
-/*
+
         if (controller.getSize() != 0) {
             for (int size = 1; size < controller.getSize(); size++) {
-                int x = list.get(list.indexOf(size - 1)).getX();
-                double y = list.get(list.indexOf(size - 1)).getY();
-                try {
-                    drawPoint(x, y, graphics2D);
-                } catch (Exception e) {
-                    System.out.println("Sorry!");
+
+                int x1 = controller.getListOfPoints().get(size - 1).getX();
+                int x2 = controller.getListOfPoints().get(size).getX();
+
+                double y = controller.getListOfPoints().get(size).getY();
+
+                if (y > coorY) {
+                    coorY = y;
+                    addCoordinatesY();
+                    repaint();
+                } else {
+                    System.out.println(y + " big");
+                    double y1 = controller.getListOfPoints().get(size - 1).getY();
+                    double y2 = controller.getListOfPoints().get(size).getY();
+                    drawPoint(x1, x2, y1, y2, graphics2D);
                 }
             }
         }
-  */
+
         addCoordinatesX();
         addCoordinatesY();
     }
 
-    private void drawPoint(int x, double y, Graphics2D graphics2D) {
-
+    private void drawPoint(int x1, int x2, double y1, double y2, Graphics2D graphics2D) {
         graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
-        x = xShift + (x - 1);
-        y = getHeight() - xShift;
-
-        graphics2D.setColor(Color.BLUE);
         graphics2D.setStroke(new BasicStroke(2.0f));
+        graphics2D.setColor(Color.GREEN);
+        graphics2D.draw(new Line2D.Double(
+                xShift + x1 * (segmentX * numberOfCoordinates) / coorX,
+                getHeight() - yShift - y1 * (segmentY * numberOfCoordinates) / coorY,
+                xShift + x2 * (segmentX * numberOfCoordinates) / coorX,
+                getHeight() - yShift - y2 * (segmentY * numberOfCoordinates) / coorY
 
-        graphics2D.draw(new Line2D.Double(lastX, lastY, x, y));
-        graphics2D.fill(new Ellipse2D.Double(x - 2, y - 2, 5, 5));
-
-        lastX = x;
-        lastY = y;
+        ));
+        graphics2D.setColor(Color.RED);
+        graphics2D.draw(new Ellipse2D.Double(
+                xShift + x1 * (segmentX * numberOfCoordinates) / coorX - 3,
+                getHeight() - yShift - y1 * (segmentY * numberOfCoordinates) / coorY - 3,
+                7,
+                7
+        ));
+        graphics2D.draw(new Ellipse2D.Double(
+                xShift + x2 * (segmentX * numberOfCoordinates) / coorX - 3,
+                getHeight() - yShift - y2 * (segmentY * numberOfCoordinates) / coorY - 3,
+                7,
+                7
+        ));
     }
 
     public JPanel getPanel() {
@@ -155,26 +160,27 @@ public class Graphic extends JPanel {
     }
 
     private void addCoordinatesX() {
+        graphics2D.setColor(Color.BLACK);
         graphics2D.setStroke(new BasicStroke(1.0f));
         for (int indexX = 1; indexX < numberOfCoordinates; indexX++) {
             graphics2D.drawString(
                     indexX * coorX / numberOfCoordinates + "",
-                    xShift + indexX * (width - 2 * xShift) / numberOfCoordinates,
-                    height - yShift + 15
+                    xShift + indexX * segmentX,
+                    getHeight() - yShift + 15
             );
         }
     }
 
     private void addCoordinatesY() {
+        graphics2D.setColor(Color.BLACK);
         graphics2D.setStroke(new BasicStroke(1.0f));
         for (int indexY = 0; indexY < numberOfCoordinates; indexY++) {
             graphics2D.drawString(
-                    (double) Math.round((double) indexY * coorY * 100 / numberOfCoordinates) / 100 + "",
-                    xShift - 25,
-                    height - yShift - indexY * (height - 2 * yShift) / numberOfCoordinates
+                    (double) Math.round(indexY * coorY * 100 / numberOfCoordinates) / 100 + "",
+                    xShift - 40,
+                    getHeight() - yShift - indexY * segmentY
             );
         }
-
     }
 
     public void setLengthArr(int length) {
@@ -196,13 +202,15 @@ public class Graphic extends JPanel {
         repaint();
     }
 
-    public void setIncrement(int sign) {
-        zoom += sign * 5;
-        zooming(getWidth() + sign * 100, getHeight() + sign * 100);
+    private void update() {
+        addCoordinatesX();
+        addCoordinatesY();
         repaint();
     }
 
-    public void rPaint(){
-        repaint();
+    public void clear() {
+        controller.clearData();
+        coorY = 0;
+        update();
     }
 }

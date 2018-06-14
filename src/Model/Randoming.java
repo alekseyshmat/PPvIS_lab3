@@ -7,7 +7,7 @@ import java.util.Random;
 public class Randoming {
     private List<Integer> list;
 
-    public Randoming(int size){
+    public Randoming(int size) {
         Random random = new Random();
         list = new ArrayList<>(size);
         for (int i = 0; i < size; i++) {
@@ -18,10 +18,6 @@ public class Randoming {
 
     public List getList() {
         return list;
-    }
-
-    public int size() {
-        return list.size();
     }
 
     public void setList(List<Integer> list) {
@@ -35,5 +31,4 @@ public class Randoming {
         }
         System.out.println();
     }
-
 }

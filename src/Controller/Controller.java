@@ -43,10 +43,6 @@ public class Controller {
         pointDB.add(pointCoor);
     }
 
-    public void DataBase(List<PointCoor> pointCoors) {
-        pointDB.DataBase(pointCoors);
-    }
-
     public void clearData() {
         pointDB.deleteRecords();
     }

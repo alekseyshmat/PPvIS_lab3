@@ -1,6 +1,5 @@
 package Model;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class ShellSort {
@@ -8,15 +7,13 @@ public class ShellSort {
 
     public ShellSort(int size) {
         list = new Randoming(size);
-//        listSort();
-//        sort();
     }
 
     public void sort() {
         list.setList(listSort());
 
         List<Integer> arr = list.getList();
-        System.out.println("Итоговый 2");
+        System.out.println("Отсортированный массив: ");
         for (int el : arr)
             System.out.print(el + " ");
         System.out.println();

@@ -32,9 +32,6 @@ public class MainFrame {
     private JTextField textQuantity; // количество массивов
     private JLabel labelSize;
 
-    private JButton plusSizeButton;
-    private JButton minusSizeButton;
-
     private String[] titles = {
             "Количество",
             "Время"
@@ -67,7 +64,7 @@ public class MainFrame {
         pagePanel.add(managePanel(), BorderLayout.SOUTH);
         pagePanel.add(startTable(), BorderLayout.WEST);
 
-        graphic = new Graphic(controller, 1, 1);
+        graphic = new Graphic(controller, 0, 0);
         graphicPanel = graphic.getPanel();
         scrollGraphic = new JScrollPane(graphicPanel, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
 
@@ -119,13 +116,9 @@ public class MainFrame {
         textLength.setPreferredSize(new Dimension(30, 30));
         textQuantity.setPreferredSize(new Dimension(30, 30));
         JButton buildButton = new JButton("Построить");
-        plusSizeButton = new JButton("+");
-        minusSizeButton = new JButton("-");
-        labelSize = new JLabel("Масштаб: 1%");
+        labelSize = new JLabel("Масштаб: 0%");
 
-        controlPanel.add(minusSizeButton);
         controlPanel.add(labelSize);
-        controlPanel.add(plusSizeButton);
 
         controlPanel.add(labelQuantity);
         controlPanel.add(textQuantity);
@@ -136,7 +129,7 @@ public class MainFrame {
         buildButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                controller.clearData();
+                graphic.clear();
                 if (controller.getSortThread() != null)
                     controller.killed();
                 int quantity = 0;
@@ -156,20 +149,6 @@ public class MainFrame {
                 }
                 graphic.setLengthArr(length);
                 controller.startThread(quantity, length);
-            }
-        });
-
-        plusSizeButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                graphic.setIncrement(1);
-            }
-        });
-
-        minusSizeButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                graphic.setIncrement(-1);
             }
         });
 
@@ -201,15 +180,6 @@ public class MainFrame {
         this.height = height;
         this.zoomX = zoomX;
         this.zoom = zoom;
-        plusSizeButton.setEnabled(true);
-        minusSizeButton.setEnabled(true);
         labelSize.setText("Масштаб: " + this.zoom + " %");
-        if (this.zoom >= 100) {
-            plusSizeButton.setEnabled(false);
-        }
-        if (this.zoom <= 5) {
-            minusSizeButton.setEnabled(false);
-        }
     }
-
 }
